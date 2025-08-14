@@ -1,0 +1,45 @@
+import { client } from './client'
+import { withAuthRetry } from './token'
+
+export enum UserRole {
+    ADMIN = 0,
+    USER = 1,
+}
+
+export interface UserResponse {
+    id: number
+    username: string
+    nickname: string
+    email: string
+    description?: string
+    profileImage?: string
+    role: UserRole
+    points: number
+    postCount: number
+    commentCount: number
+    createdAt: string
+}
+
+export interface UserBriefResponse {
+    id: number
+    username: string
+    nickname: string
+    description?: string
+    profileImage?: string
+}
+
+const USERS_API_PREFIX = 'users'
+
+export const getUserByUsername = async (username: string) => {
+    const response = await client.get<UserResponse>(`/${USERS_API_PREFIX}/${username}`)
+    return response.data
+}
+
+export type UserUpdateRequest = Partial<Pick<UserResponse, 'nickname' | 'description' | 'profileImage'>>
+
+export const updateUser = async (username: string, payload: UserUpdateRequest) => {
+    return withAuthRetry(async (header) => {
+        const response = await client.put<UserResponse>(`/${USERS_API_PREFIX}/${username}`, payload, header)
+        return response.data
+    })
+}
