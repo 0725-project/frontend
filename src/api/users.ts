@@ -17,6 +17,8 @@ export interface UserResponse {
     points: number
     postCount: number
     commentCount: number
+    followersCount: number
+    followingCount: number
     createdAt: string
 }
 
@@ -26,6 +28,10 @@ export interface UserBriefResponse {
     nickname: string
     description?: string
     profileImage?: string
+    role: UserRole
+    points: number
+    followersCount: number
+    followingCount: number
 }
 
 const USERS_API_PREFIX = 'users'
