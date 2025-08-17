@@ -6,15 +6,16 @@ import LoginForm from '../components/Auth/LoginForm'
 import RegisterForm from '../components/Auth/RegisterForm'
 import { formatDate } from '@/utils/dateFormatter'
 import { updateUser } from '@/api/users'
+import FollowModal from '../components/profile/FollowModal'
+import { GetMeResponse } from '@/api/auth'
 
 const UserCard = () => {
     const { user, loading, setUser } = useAuth()
-    const [modal, setModal] = useState<'login' | 'register' | null>(null)
+    const [modal, setModal] = useState<'login' | 'register' | 'follow' | null>(null)
     const [editMode, setEditMode] = useState(false)
     const [nickname, setNickname] = useState(user?.nickname ?? null)
     const [description, setDescription] = useState(user?.description || null)
     const [error, setError] = useState('')
-
     useEffect(() => {
         setNickname(user?.nickname ?? null)
         setDescription(user?.description ?? null)
@@ -31,7 +32,7 @@ const UserCard = () => {
                 nickname: nickname ? nickname : undefined,
                 description: description ? description : undefined,
             })
-            setUser(updatedUser)
+            setUser({ ...user, ...updatedUser } as GetMeResponse)
             setEditMode(false)
         } catch (error) {
             setError('Failed to update profile')
@@ -55,7 +56,7 @@ const UserCard = () => {
                         {user ? (
                             <div className='flex flex-col w-full'>
                                 <div className='flex items-center mb-4 relative'>
-                                    <div className='w-18 h-18 rounded-full bg-slate-200 flex items-center justify-center text-lg font-bold text-slate-500 shrink-0'>
+                                    <div className='w-18 h-18 xl:w-24 xl:h-24 rounded-full bg-slate-200 flex items-center justify-center text-lg xl:text-2xl font-bold text-slate-500 shrink-0'>
                                         {(nickname ?? user.username).charAt(0).toUpperCase() || '?'}
                                     </div>
                                     <div className='ml-6 flex flex-col flex-1'>
@@ -82,7 +83,6 @@ const UserCard = () => {
                                                 <span className='break-words'>@{user.username}</span>
                                             )}
                                         </div>
-
                                         <div className='mt-2 leading-snug break-words whitespace-normal min-w-0'>
                                             {editMode ? (
                                                 <input
@@ -99,6 +99,20 @@ const UserCard = () => {
                                             ) : (
                                                 <span className='text-gray-400'>자기소개가 없습니다.</span>
                                             )}
+                                        </div>
+                                        <div className='flex gap-2 mt-3'>
+                                            {/* <button
+                                                className='px-4 py-1 rounded-full bg-slate-100 text-slate-700 font-medium hover:bg-slate-200 transition border border-slate-200'
+                                                onClick={() => {}}
+                                            >
+                                                팔로우
+                                            </button> */}
+                                            <button onClick={() => setModal('follow')}>
+                                                <span className='text-slate-400'>팔로워</span>
+                                                <span className='text-slate-600 ml-2'>{user.followersCount}</span>
+                                                <span className='text-slate-400 ml-3'>팔로잉</span>
+                                                <span className='text-slate-600 ml-2'>{user.followingCount}</span>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -183,6 +197,9 @@ const UserCard = () => {
                     </button>
                 </div>
             </AuthModal>
+            {user && (
+                <FollowModal visible={modal === 'follow'} onHide={() => setModal(null)} username={user.username} followerCount={user.followersCount} followingCount={user.followingCount} />
+            )}
         </div>
     )
 }
