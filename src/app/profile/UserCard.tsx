@@ -198,7 +198,13 @@ const UserCard = () => {
                 </div>
             </AuthModal>
             {user && (
-                <FollowModal visible={modal === 'follow'} onHide={() => setModal(null)} username={user.username} followerCount={user.followersCount} followingCount={user.followingCount} />
+                <FollowModal
+                    visible={modal === 'follow'}
+                    onHide={() => setModal(null)}
+                    username={user.username}
+                    followerCount={user.followersCount}
+                    followingCount={user.followingCount}
+                />
             )}
         </div>
     )
