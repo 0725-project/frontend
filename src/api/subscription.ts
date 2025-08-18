@@ -29,11 +29,7 @@ export const followUser = async (username: string) => {
 
 export const unfollowUser = async (username: string) => {
     return withAuthRetry(async (header) => {
-        const response = await client.post<UnfollowResponse>(
-            `/${SUBSCRIPTION_API_PREFIX}/unfollow/${username}`,
-            {},
-            header,
-        )
+        const response = await client.delete<UnfollowResponse>(`/${SUBSCRIPTION_API_PREFIX}/follow/${username}`, header)
         return response.data
     })
 }

@@ -19,26 +19,33 @@ export interface UserResponse {
     commentCount: number
     followersCount: number
     followingCount: number
+    isFollowing?: boolean
+    isFollowsMe?: boolean
     createdAt: string
 }
 
-export interface UserBriefResponse {
-    id: number
-    username: string
-    nickname: string
-    description?: string
-    profileImage?: string
-    role: UserRole
-    points: number
-    followersCount: number
-    followingCount: number
-}
+export type UserBriefResponse = Pick<
+    UserResponse,
+    | 'id'
+    | 'username'
+    | 'nickname'
+    | 'description'
+    | 'profileImage'
+    | 'role'
+    | 'points'
+    | 'followersCount'
+    | 'followingCount'
+    | 'isFollowing'
+    | 'isFollowsMe'
+>
 
 const USERS_API_PREFIX = 'users'
 
 export const getUserByUsername = async (username: string) => {
-    const response = await client.get<UserResponse>(`/${USERS_API_PREFIX}/${username}`)
-    return response.data
+    return withAuthRetry(async (header) => {
+        const response = await client.get<UserResponse>(`/${USERS_API_PREFIX}/${username}`, header)
+        return response.data
+    })
 }
 
 export type UserUpdateRequest = Partial<Pick<UserResponse, 'nickname' | 'description' | 'profileImage'>>
